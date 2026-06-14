@@ -32,10 +32,28 @@ Write a complete wallet and exchange interoperability specification covering eve
 
 ## Flows to Document
 
-### Wallet Connection
-- Connect and disconnect wallet
-- Display connected address in truncated form (e.g., G8Xp...3k91)
-- Show on-chain NMG balance in the game portal header
+### Wallet Connection (Required Gate — MVP Manual Sign-In)
+
+**Browser wallet extension is NOT available at launch.** Players must authenticate before accessing the portal. Implementation follows [Neoxa Developer Docs](https://dev.neoxa.net/) identity verification.
+
+**Flow:**
+1. Portal loads → full-screen **Connect Wallet** modal blocks all content
+2. Server generates session nonce; client displays sign message: `terra-forge-login:{nonce}`
+3. Player enters Neoxa address (`G…` prefix) and pastes signature from their wallet
+4. Backend verifies via `POST https://assets.neoxa.net/agents/verify-message` with `{ address, signature, message }`
+5. On `valid: true` → create session, unlock portal, show truncated address in header
+6. On failure → inline error; do not grant access
+
+**How to sign (player-facing help):**
+- Link to https://dev.neoxa.net/ for SDK `signMessage`, Neoxa Core GUI, or `@neoxa/game-sdk`
+- Provide **Copy Message** button for the exact nonce string
+- Collapsible accordion: step-by-step sign instructions per wallet type
+
+**Future:** placeholder **"Neoxa Wallet Extension — Coming Soon"** button (disabled); when extension ships, replace manual paste with one-click connect using the same verify-message backend.
+
+**Disconnect:** clear session; return to Connect Wallet gate.
+
+**Post-auth balances:** show on-chain NMG balance in header (via Asset API `GET /addresses/{address}/assets`) plus in-game Gold and ores.
 
 ### NMG Deposit (Irreversible — Start Playing)
 - Player sends NMG from wallet to game treasury address on L1
@@ -50,7 +68,8 @@ Write a complete wallet and exchange interoperability specification covering eve
 - **24-hour cooldown** before first withdrawal on new accounts (Sybil protection)
 - System validates balance and transfers from Reward Reserve wallet on L1
 
-### Tutorial Catalyst Subsidy (No Wallet Required)
+### Tutorial Catalyst Subsidy (No NMG Deposit Required)
+- Wallet **sign-in** is required to access the portal; **NMG deposit is not** required to start
 - First 3 Bronze smelts: catalyst burned from Tutorial Subsidy Pool; player pays 0 NMG
 - After subsidies exhausted, player wallet or in-game NMG balance required for catalyst
 

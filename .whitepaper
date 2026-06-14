@@ -1,6 +1,6 @@
 Terra-Forge: The Deep Core
 GameFi 2.0 Technical Whitepaper & Game Design Document
-Document Version: 2.2.1
+Document Version: 2.3.1
 Ledger Architecture: L1 Native Asset Protocol
 Language: English only
 Author: Lead Game Economist & Systems Architect
@@ -75,7 +75,7 @@ Gold           | Game DB      | Minted on NMG deposit (one-way). Pays wages, res
 Guild Miners   | Game DB      | Biotech / Cyborg. Rarity: Common→Legendary.
                |              | NOT on-chain. NOT NFTs. Tradable in-game only.
 Raw Ores       | Game DB      | Copper, Iron, Coal, Mithril, Star-Element.
-               |              | P2P tradable on guild marketplace.
+               |              | Used for smelting only — NOT player-tradable.
 Premium Ingots | Game DB      | Bronze, Iron, Mithril, Astral. Redeem for NMG
                |              | from Reward Reserve after catalyst burn confirmed.
 
@@ -103,6 +103,15 @@ Replenishment sources:
 Supported wallets: Bitget, Atomic, Neoxa Core GUI, any Neoxa L1 wallet.
 Block confirmation: ~60 seconds. On-chain actions: deposit, burn, withdrawal.
 
+Wallet sign-in (MVP): Browser extension NOT available at launch. Players MUST
+authenticate with Neoxa address + signmessage before accessing the portal.
+Flow per https://dev.neoxa.net/ :
+  1. Server issues nonce message: terra-forge-login:{nonce}
+  2. Player signs with Neoxa wallet (Core GUI, SDK, or compatible tool)
+  3. Player submits address + signature; backend verifies via
+     POST /agents/verify-message on assets.neoxa.net
+  4. Session unlocks portal. NMG deposit remains optional for F2P play.
+
 External exchange: neoxa.exchange — NMG/NEOX pair, 1.5% swap fee to LPs.
 NMG and NEOX have a floating market price. There is NO fixed peg between them.
 
@@ -114,14 +123,19 @@ External price reference (updated periodically by ops):
 3. CORE GAMEPLAY LOOP & REFINING MATHEMATICS
 ================================================================================
 
-3.1 New Player Entry (No NMG Required to Start)
+3.1 New Player Entry
 -----------------------------------------------
-Every new account receives 500 Starter Gold (one-time, in-game only).
-Players hire a Common Biotech Miner (200 Gold), dispatch, mine, and smelt using
-3 free Tutorial Catalyst Subsidies (see §3.8). First NMG wallet deposit is optional.
+Players MUST connect a Neoxa wallet (manual address + signature sign-in at MVP;
+browser extension coming later) before accessing the portal. See §2.4.
 
-Gold is the F2P win layer: leaderboard rank, guild standing, marketplace wealth,
-and ore-trading profits. NMG is the withdrawal layer — not the only win condition.
+Every new authenticated account receives 500 Starter Gold (one-time, in-game only).
+Players rent or buy a Common Biotech Miner, dispatch, mine, and smelt using
+3 free Tutorial Catalyst Subsidies (see §3.8). First NMG wallet deposit is optional.
+F2P rent path: 50 Gold / 7 days (vs 200 Gold buy).
+
+Gold is the F2P win layer: leaderboard rank, guild standing, miner progression,
+and Gold sinks (rent, buy, repair, rest, upgrades). NMG is the withdrawal layer
+— not the only win condition.
 
 3.2 NMG → Gold Conversion (Irreversible)
 ----------------------------------------
@@ -162,14 +176,33 @@ Deep Core     | 15%    | 20%  | 25%  | 30%     | 10%
   - At 0 durability, miner cannot dispatch.
   - Repair: 10 Gold per 10 durability restored.
 
-3.6 Guild Miner Hire & Purchase (In-Game, Gold or NMG-equivalent via deposit)
------------------------------------------------------------------------------
-Rarity    | Class   | Hire/Purchase Cost | Notes
-----------|---------|-------------------|----------------------------------
-Common    | Biotech | 200 Gold          | Starter tier
-Rare      | Biotech | 800 Gold          | —
-Epic      | Cyborg  | 50 NMG deposit*   | *Converted to Gold at 1:250 internally
-Legendary | Cyborg  | 200 NMG deposit*  | Limited supply: 500 per server epoch
+3.6 Guild Shop — Rent vs Buy (No P2P)
+--------------------------------------
+Every miner is acquired from the Guild Hall shop. There is NO player-to-player
+trading, rental marketplace, or ore marketplace.
+
+Each tier offers two modes:
+
+  RENT  — 25% of buy price, 7-day lease, miner removed at expiry
+  BUY   — full price, permanent ownership
+
+Rarity    | Class   | Rent (7 days) | Buy (permanent) | Notes
+----------|---------|---------------|-----------------|----------------------------------
+Common    | Biotech | 50 Gold       | 200 Gold        | Starter tier
+Rare      | Biotech | 200 Gold      | 800 Gold        | —
+Epic      | Cyborg  | 15 NMG        | 50 NMG*         | *via deposit at 1:250 Gold
+Legendary | Cyborg  | 60 NMG        | 200 NMG*        | Limited: 500 buy per server epoch
+
+Rent rules:
+  - Lease timer starts on confirmation; miner removed at expiry (ores kept).
+  - Rented miners cannot be upgraded (L_tool locked at 1).
+  - Repair/rest costs apply during lease (Gold sinks).
+  - Max 2 active rented miners per account.
+  - No refund on early return.
+
+Buy rules:
+  - Permanent roster slot; eligible for drill upgrade (§5.1).
+  - Repair/rest as normal.
 
 3.7 Forging & Smelting Recipes
 ------------------------------
@@ -229,13 +262,13 @@ Withdrawals debit in-game balance and transfer from Reward Reserve wallet on L1.
 4.1 Active Players (Time-Rich, Capital-Poor)
 --------------------------------------------
 Start with 500 Starter Gold. Profit via smelting (3 subsidized Bronze first),
-P2P ore sales for Gold, and renting elite miners via server-enforced marketplace.
+Gold progression (rent cheap miners to try, buy to keep), and optional NMG deposit.
 
-4.2 Capital Providers (Capital-Rich, Time-Poor)
--------------------------------------------------
-Purchase elite in-game miners. List them for rent with payout splits (e.g., 60/40).
-Rental is enforced by game servers with escrow — not a trustless smart contract.
-Owners receive ore share automatically; smelt or sell ores to realize NMG.
+4.2 Industrial Investors (Capital-Rich, Time-Poor)
+---------------------------------------------------
+Purchase (or rent to trial) elite Cyborg miners from the Guild Shop. Dispatch to
+deeper zones, smelt high-tier ingots, withdraw NMG. No P2P — investors operate
+their own miners directly.
 
 4.3 Liquidity Providers & Traders
 ---------------------------------
@@ -247,40 +280,26 @@ Stake 1,000,000 NEOX collateral (~$80 USDC at reference price). Host game DB,
 matchmaking, and anti-cheat. Receive 45% of L1 block rewards. Smartnodes are the
 authoritative source of player state; anti-cheat validates all mining and smelting.
 
-4.5 Miner Rental (Server-Enforced Escrow)
------------------------------------------
-  - Owner lists miner with split %, duration, optional deposit.
-  - Renter pays deposit (Gold) into escrow.
-  - Ores split each mining tick per agreed ratio.
-  - On expiry or owner force-recall (after 24h renter inactivity), miner returns.
-  - NOT trustless — enforced by Smartnode network consensus.
+4.5 P2P Systems — Removed (v2.3.0)
+------------------------------------
+Player-to-player ore marketplace and miner rental are permanently removed.
+All acquisition goes through the Guild Shop (§3.6): Rent (7-day lease) or Buy
+(permanent). Ores are smelting inputs only — not tradable between players.
 
-4.6 P2P Ore Marketplace (Deferred — Not in MVP)
------------------------------------------------
-  Design retained for future protocol phase. NOT shipped in MVP launch scope.
-  Reason: server-enforced escrow, listing management, and anti-abuse enforcement
-  require significant backend infrastructure beyond the current release.
-
-  When implemented (future):
-  - List ores for Gold or in-game NMG balance (not on-chain until withdrawal).
-  - 2% fee on trades → Game Treasury (Gold sink).
-  - Escrow holds goods until buyer confirms or 1-hour timeout refunds.
-
-  MVP F2P win layer uses Gold sinks (hire, repair, rest, upgrades) instead of P2P sales.
-
-4.7 Everyone Winnable — Win Matrix
+4.6 Everyone Winnable — Win Matrix
 ---------------------------------
 Everyone can win differently. Each class has a designed non-zero path:
 
 Player Class          | Primary Win              | Crypto Upfront? | Minimum Viable Path
 ----------------------|--------------------------|-----------------|---------------------
-Active (F2P)          | Gold + tutorial NMG      | No              | 500 Gold → mine →
-                      | + Gold progression       |                 | 3 subsidized Bronze →
-                      |                          |                 | ~3.6 NMG (MVP: no P2P market)
-Active (invested)     | Smelting net NMG         | Optional        | Deposit NMG → faster
-                      | + withdraw               |                 | progression → higher ingots
-Capital Provider      | Rental ore share         | Yes (50–200 NMG)| List Legendary 60/40 →
-                      | → smelt/sell             |                 | passive ore income
+Active (F2P)          | Gold + tutorial NMG      | No              | 500 Gold → rent Common
+                      | + progression            |                 | (50G/7d) or buy (200G) →
+                      |                          |                 | mine → 3 subsidized Bronze →
+                      |                          |                 | ~3.6 NMG
+Active (invested)     | Smelting net NMG         | Optional        | Deposit NMG → buy Epic/
+                      | + withdraw               |                 | Legendary → deeper zones
+Industrial investor   | High-tier smelting NMG   | Yes (50–200 NMG)| Buy Legendary → Deep Core
+                      | + withdraw               |                 | → smelt Mithril/Astral
 Liquidity Provider    | 1.5% DEX swap fees       | Yes (LP stake)  | Independent of game;
                       |                          |                 | wins from trading volume
 Smartnode Operator    | 45% L1 block rewards     | Yes (1M NEOX)   | Infrastructure yield;
@@ -305,7 +324,7 @@ Upgrade drill from L to L+1:
 5.2 Treasury & Buyback Architecture
 -------------------------------------
 Two treasury buckets:
-  A) Game Treasury (NMG) — receives 20% of upgrade NMG, marketplace fees.
+  A) Game Treasury (NMG) — receives 20% of upgrade NMG.
      Can replenish Reserve (max 10% per quarter via governance).
   B) Buyback Reserve (NEOX/USDC) — funded by periodic sale of Treasury NMG on DEX
      and direct stablecoin allocations.
@@ -367,19 +386,46 @@ governance replenishment keep pace with player growth.
 6. WEBSITE & GAME INTERFACE
 ================================================================================
 
-Visual: Industrial steampunk sci-fi. Dark mode. Colors: #1A1A24, #FF5500, #0B0B0F.
-Language: English only.
+Visual: Web3 game command deck — dark-mode sci-fi with industrial steampunk lore.
+Base colors: #1A1A24, #FF5500, #0B0B0F. Web3 accents: #00E5FF, #8B5CF6, #FFD700.
+Patterns: hex grids, glassmorphism cards, rarity-colored borders, chain badges,
+loot-pop animations, pulsing glow on on-chain actions. Language: English only.
+
+Wallet gate (MVP): Portal blocked until Neoxa sign-in. No browser extension yet —
+players enter address + paste signmessage signature per https://dev.neoxa.net/
+(POST /agents/verify-message). Disabled "Extension — Coming Soon" slot reserved.
+NMG deposit optional after sign-in; starter Gold still granted on first auth.
 
 Portal sections (MVP):
-  A) Miner Command Center — ID, class, rarity, durability, fatigue, dispatch/recall
-  B) Smeltery Forge — 4 ingot recipes, catalyst fees, emission multiplier display
-  C) Market — External CTA to neoxa.exchange (login/register + trade NMG/NEOX).
-     No in-game swap widget. Optional read-only spot price display.
-  D) Onboarding — "Welcome, Guild Master. You begin with 500 Gold and 3 free smelts..."
+  A) Miner Command Center — roster, zone dispatch, fatigue/durability
+  B) Smeltery Forge — 4 ingot recipes, catalyst fees, emission multiplier
+  C) Market — External CTA to neoxa.exchange (login/register + trade NMG/NEOX)
+  D) Guild Hall Shop — Rent vs Buy miners (no P2P)
 
-NOT in MVP portal:
-  - P2P Guild Marketplace (§4.6 deferred)
+Mining zones (Section A UI — "Zone Intel" panel):
+  Surface       | γ 1.0× | 45% Cu, 30% Fe, 25% Coal, 0% Mithril, 0% Star-Element
+                | Default zone; all miners; Bronze loop
+  Mid-Fracture  | γ 1.3× | 30% Cu, 25% Fe, 25% Coal, 15% Mithril, 5% Star-Element
+                | Unlocks after first Bronze Ingot forged
+  Deep Core     | γ 1.6× | 15% Cu, 20% Fe, 25% Coal, 30% Mithril, 10% Star-Element
+                | Unlocks with Epic or Legendary Cyborg on roster; Mithril/Astral path
+
+Zone selector on each miner card; locked zones show padlock + requirement tooltip.
+Dispatch button label adapts per zone ("Send to Surface", etc.).
+
+Tutorial spotlight system: After sign-in, guided tour dims UI (80% overlay) and
+pulses a ring on ONE target per step. Step 2 MUST spotlight the Rent button on
+Common Biotech (50 Gold / 7 days). "Next" disabled until player clicks spotlight.
+Steps: Guild Hall → Rent → Confirm → Surface zone → Dispatch → Forge Bronze →
+optional NMG deposit. Skip persists tutorial_completed flag.
+
+NOT in portal:
+  - P2P systems (removed v2.3.0 — no ore marketplace, no player rental)
   - In-game NMG/NEOX swap widget or embedded DEX iframe
+  - Browser wallet extension (manual sign-in only at MVP)
+
+Guild Shop UI: each miner card shows [ Rent — X / 7 days ] and [ Buy — Y forever ].
+Rented miners display lease timer badge.
 
 6.1 Prototype Implementation Notes
 ----------------------------------
@@ -395,7 +441,8 @@ See prompts/16-economy-numbers-bible.md for full numeric reference.
 See prompts/17-sustainability-everyone-wins.md for sustainability and win-path docs.
 See prompts/18-game-prototype-economy-calibration.md for prototype calibration.
 See prompts/19-market-external-marketplace-deferred.md for MVP market scope.
+See prompts/20-guild-shop-rent-vs-buy-no-p2p.md for rent vs buy spec (no P2P).
 
 ================================================================================
-END OF DOCUMENT v2.2.1
+END OF DOCUMENT v2.3.1
 ================================================================================

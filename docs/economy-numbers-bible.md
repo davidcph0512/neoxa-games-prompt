@@ -96,14 +96,28 @@ Single authoritative numeric reference for developers, economists, and investors
 
 ---
 
-## 8. Guild Miner Costs
+## 8. Guild Shop — Rent vs Buy (No P2P)
 
-| Rarity | Class | Cost |
-|--------|-------|------|
+### Buy (Permanent)
+
+| Rarity | Class | Buy Cost |
+|--------|-------|----------|
 | Common | Biotech | 200 Gold |
 | Rare | Biotech | 800 Gold |
 | Epic | Cyborg | 50 NMG deposit |
 | Legendary | Cyborg | 200 NMG deposit (500/epoch) |
+
+### Rent (7-Day Lease) — 25% of buy price
+
+| Rarity | Class | Rent Cost |
+|--------|-------|-----------|
+| Common | Biotech | 50 Gold / 7 days |
+| Rare | Biotech | 200 Gold / 7 days |
+| Epic | Cyborg | 15 NMG / 7 days |
+| Legendary | Cyborg | 60 NMG / 7 days |
+
+**Rent rules:** Max 2 active leases/account. No upgrades on rented miners. Removed at expiry.  
+**No P2P:** Ores are smelting-only. No player marketplace or player rental.
 
 ---
 
@@ -162,9 +176,9 @@ L=1→2: **1.50 NMG + 25 Gold** (1.20 NMG burned, 0.30 to Treasury)
 
 | Class | Crypto Upfront? | Path |
 |-------|-----------------|------|
-| Active F2P | No | 500 Gold → mine → 3 subsidized Bronze → ~3.6 NMG |
-| Active invested | Optional | Deposit → upgrade → higher ingots |
-| Capital Provider | Yes | Rental 60/40 → passive ore |
+| Active F2P | No | 500 Gold → rent (50G/7d) or buy (200G) → 3 subsidized Bronze → ~3.6 NMG |
+| Active invested | Optional | Deposit → buy Epic/Legendary → higher ingots |
+| Industrial investor | Yes | Buy Legendary → Deep Core → smelt Mithril/Astral |
 | Liquidity Provider | Yes | 1.5% DEX fees |
 | Smartnode Operator | Yes | 45% block rewards |
 

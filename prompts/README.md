@@ -32,7 +32,7 @@ English prompts for Terra-Forge v**2.2.0**. Canonical source: **`.whitepaper`**
 | [16-economy-numbers-bible.md](./16-economy-numbers-bible.md) | **Canonical** | All numeric values |
 | **[17-sustainability-everyone-wins.md](./17-sustainability-everyone-wins.md)** | **§4.7 + §5.5–5.6** | **Sustainability & win matrix docs** |
 | **[18-game-prototype-economy-calibration.md](./18-game-prototype-economy-calibration.md)** | **§6.1** | **Fix prototype NMG inflation (mining + recipe audit)** |
-| **[19-market-external-marketplace-deferred.md](./19-market-external-marketplace-deferred.md)** | **§6 MVP** | **Market = neoxa.exchange link; Marketplace deferred** |
+| **[20-guild-shop-rent-vs-buy-no-p2p.md](./20-guild-shop-rent-vs-buy-no-p2p.md)** | **§3.6 + §4.5** | **Guild Shop rent/buy; P2P permanently removed** |
 
 ## Recommended Generation Order
 
@@ -44,6 +44,21 @@ English prompts for Terra-Forge v**2.2.0**. Canonical source: **`.whitepaper`**
 5. 14                           (landing page)
 6. 13                           (game UI)
 ```
+
+## v2.3.1 Changelog (UI & wallet gate)
+
+- **Web3 game aesthetic:** hex grids, chain badges, rarity borders, loot-pop animations
+- **Wallet gate required:** manual Neoxa address + signmessage per https://dev.neoxa.net/ (extension deferred)
+- **Mining zone UI spec:** Surface / Mid-Fracture / Deep Core comparison panel + unlock rules
+- **Tutorial spotlight:** dim overlay + pulse ring on target control (Rent button on step 2)
+- **Guild Hall as Section D** in portal layout
+
+## v2.3.0 Changelog (from v2.2.1)
+
+- **No P2P:** Ore marketplace and player-to-player miner rental permanently removed
+- **Guild Shop rent vs buy:** Rent at 25% of buy price for 7 days; buy = permanent
+- **Capital Provider → Industrial Investor:** Buy own miners, smelt for NMG (no landlord role)
+- New prompt: `20-guild-shop-rent-vs-buy-no-p2p.md`
 
 ## v2.2.1 Changelog (from v2.2.0)
 
