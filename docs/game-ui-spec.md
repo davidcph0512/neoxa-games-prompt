@@ -74,25 +74,34 @@
 
 ---
 
-## Section C: Market Exchange
+## Section C: Market (External — MVP)
 
-**Purpose:** NMG/NEOX swap via neoxa.exchange integration.
+**Purpose:** Direct players to trade NMG/NEOX on neoxa.exchange. No in-game swap.
 
-**Displays:**
-- Spot price (NEOX per NMG)
+**Primary CTA:**
+- **"Trade on neoxa.exchange →"** (opens new tab)
+- **"Register / Log In on neoxa.exchange"** (secondary)
+
+**Optional read-only displays:**
+- Spot price (NEOX per NMG) — fetched from exchange API if available
 - 24h change
-- Slippage estimate
-- **1.5% DEX fee** (prominent)
-- Swap input/output fields
-- Link: "Trade on neoxa.exchange →"
+- **1.5% DEX fee** footnote
+
+**Copy:**
+> Terra-Forge does not host swaps inside the game. All NMG ↔ NEOX trading happens on neoxa.exchange. Floating market price — no peg.
+
+**NOT in MVP:** Swap widget, slippage controls, embedded iframe.
 
 ---
 
-## Section D: P2P Guild Marketplace (Optional Tab)
+## Section D: P2P Guild Marketplace — Deferred (Not in MVP)
 
-- List ores for Gold or in-game NMG
-- 2% trade fee indicator
-- Escrow status with 1-hour timeout
+**Status:** Not available in current release. Tab removed or shows permanent "Not Available" state.
+
+**Copy:**
+> P2P ore trading and miner rental require server-enforced escrow and are not available in this release.
+
+Full design retained in whitepaper §4.6 for future protocol phase.
 
 ---
 

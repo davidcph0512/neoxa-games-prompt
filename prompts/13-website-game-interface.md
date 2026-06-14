@@ -37,10 +37,18 @@ Act as a Principal Web3 Frontend Engineer and Lead Game UI Designer. Your task i
 - Per-recipe display showing raw ore requirements, NMG catalyst fees, expected NMG reward, and net profit
 - "Forge Ingot" button with active and disabled states based on available materials and NMG balance
 
-### Section C: Market Exchange
-- Custom swap widget to trade NMG for NEOX
-- Slippage display and price chart
-- Prominent 1.5% DEX fee indicator
+### Section C: Market (External CTA — MVP)
+- **No in-game swap widget.** Direct players to neoxa.exchange.
+- Primary button: "Trade on neoxa.exchange →" (external link, new tab)
+- Secondary button: "Register / Log In on neoxa.exchange"
+- Optional read-only spot price and 24h change (from exchange API)
+- Prominent 1.5% DEX fee footnote
+- Copy: floating NMG/NEOX price — no peg
+
+### Marketplace — NOT in MVP
+- Do NOT build P2P ore listings, bids, or miner rental UI for launch.
+- Remove Marketplace tab OR show permanent "Not Available" state.
+- See `19-market-external-marketplace-deferred.md` for full scope.
 
 ### Onboarding / Tutorial Modal
 - Interactive greeting for new players with the message:

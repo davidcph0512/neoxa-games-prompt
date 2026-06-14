@@ -1,6 +1,6 @@
 Terra-Forge: The Deep Core
 GameFi 2.0 Technical Whitepaper & Game Design Document
-Document Version: 2.2.0
+Document Version: 2.2.1
 Ledger Architecture: L1 Native Asset Protocol
 Language: English only
 Author: Lead Game Economist & Systems Architect
@@ -255,11 +255,18 @@ authoritative source of player state; anti-cheat validates all mining and smelti
   - On expiry or owner force-recall (after 24h renter inactivity), miner returns.
   - NOT trustless — enforced by Smartnode network consensus.
 
-4.6 P2P Ore Marketplace
------------------------
+4.6 P2P Ore Marketplace (Deferred — Not in MVP)
+-----------------------------------------------
+  Design retained for future protocol phase. NOT shipped in MVP launch scope.
+  Reason: server-enforced escrow, listing management, and anti-abuse enforcement
+  require significant backend infrastructure beyond the current release.
+
+  When implemented (future):
   - List ores for Gold or in-game NMG balance (not on-chain until withdrawal).
   - 2% fee on trades → Game Treasury (Gold sink).
   - Escrow holds goods until buyer confirms or 1-hour timeout refunds.
+
+  MVP F2P win layer uses Gold sinks (hire, repair, rest, upgrades) instead of P2P sales.
 
 4.7 Everyone Winnable — Win Matrix
 ---------------------------------
@@ -268,8 +275,8 @@ Everyone can win differently. Each class has a designed non-zero path:
 Player Class          | Primary Win              | Crypto Upfront? | Minimum Viable Path
 ----------------------|--------------------------|-----------------|---------------------
 Active (F2P)          | Gold + tutorial NMG      | No              | 500 Gold → mine →
-                      | + ore sales              |                 | 3 subsidized Bronze →
-                      |                          |                 | ~3.6 NMG + P2P ore Gold
+                      | + Gold progression       |                 | 3 subsidized Bronze →
+                      |                          |                 | ~3.6 NMG (MVP: no P2P market)
 Active (invested)     | Smelting net NMG         | Optional        | Deposit NMG → faster
                       | + withdraw               |                 | progression → higher ingots
 Capital Provider      | Rental ore share         | Yes (50–200 NMG)| List Legendary 60/40 →
@@ -363,16 +370,32 @@ governance replenishment keep pace with player growth.
 Visual: Industrial steampunk sci-fi. Dark mode. Colors: #1A1A24, #FF5500, #0B0B0F.
 Language: English only.
 
-Portal sections:
+Portal sections (MVP):
   A) Miner Command Center — ID, class, rarity, durability, fatigue, dispatch/recall
   B) Smeltery Forge — 4 ingot recipes, catalyst fees, emission multiplier display
-  C) Market Exchange — NMG/NEOX swap widget, 1.5% fee indicator
+  C) Market — External CTA to neoxa.exchange (login/register + trade NMG/NEOX).
+     No in-game swap widget. Optional read-only spot price display.
   D) Onboarding — "Welcome, Guild Master. You begin with 500 Gold and 3 free smelts..."
+
+NOT in MVP portal:
+  - P2P Guild Marketplace (§4.6 deferred)
+  - In-game NMG/NEOX swap widget or embedded DEX iframe
+
+6.1 Prototype Implementation Notes
+----------------------------------
+Browser prototypes (e.g., web/game.html) MUST use canonical numbers from
+prompts/16-economy-numbers-bible.md. Common prototype errors that inflate NMG:
+  - Mining rate in ores/sec instead of ores/hour (Φ_base = 10/hr)
+  - Smelting inputs 20× too small (Bronze must be 100 Copper + 50 Coal)
+These errors can produce 1,000+ NMG in minutes instead of ~3.6 NMG over ~57 hours.
+See prompts/18-game-prototype-economy-calibration.md for audit checklist.
 
 See prompts/13-website-game-interface.md and prompts/14-landing-page.md for UI specs.
 See prompts/16-economy-numbers-bible.md for full numeric reference.
 See prompts/17-sustainability-everyone-wins.md for sustainability and win-path docs.
+See prompts/18-game-prototype-economy-calibration.md for prototype calibration.
+See prompts/19-market-external-marketplace-deferred.md for MVP market scope.
 
 ================================================================================
-END OF DOCUMENT v2.2.0
+END OF DOCUMENT v2.2.1
 ================================================================================

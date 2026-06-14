@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terra-Forge: The Deep Core — Forge Portal</title>
+    <style>
+        :root{--bg:#0B0B0F;--surf:#1A1A24;--surf2:#22222E;--o:#FF5500;--gold:#D4A017;--tx:#E8E0D0;--mu:#8A8070;--br:rgba(255,85,0,.18);--green:#22CC66;--blue:#5599FF;--purple:#AA44FF;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;}
+
+        /* HEADER */
+        header{position:sticky;top:0;z-index:200;background:rgba(11,11,15,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--br);height:58px;display:flex;align-items:center;padding:0 1.25rem;gap:.75rem;}
+        .logo{font-size:.82rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(135deg,var(--o),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;margin-right:.5rem;}
+        .hbal{display:flex;align-items:center;gap:.35rem;background:rgba(26,26,36,.9);border:1px solid var(--br);padding:.25rem .65rem;border-radius:100px;font-size:.75rem;font-weight:700;white-space:nowrap;}
+        .hbal .lbl{color:var(--mu);font-weight:400;}
+        .hbal.nmg .val{color:var(--o);}
+        .hbal.gold .val{color:var(--gold);}
+        .spacer{flex:1;}
+        .emit-pill{display:flex;align-items:center;gap:.35rem;background:rgba(255,85,0,.07);border:1px solid rgba(255,85,0,.22);padding:.25rem .7rem;border-radius:100px;font-size:.7rem;color:var(--o);font-weight:700;white-space:nowrap;}
+        .dot{width:6px;height:6px;background:var(--o);border-radius:50%;animation:blink 2s infinite;flex-shrink:0;}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+        .btn-wallet{background:var(--o);color:#fff;border:none;padding:.38rem .9rem;border-radius:4px;font-weight:700;font-size:.73rem;letter-spacing:.07em;cursor:pointer;text-transform:uppercase;transition:background .2s;white-space:nowrap;}
+        .btn-wallet:hover{background:#CC4400;}
+        .back-link{color:var(--mu);text-decoration:none;font-size:.72rem;margin-right:.25rem;transition:color .2s;}
+        .back-link:hover{color:var(--o);}
+
+        /* ORE BAR */
+        .ore-bar{display:flex;gap:1rem;padding:.5rem 1.25rem;background:rgba(11,11,15,.6);border-bottom:1px solid rgba(255,85,0,.07);overflow-x:auto;align-items:center;min-height:36px;}
+        .ore-pill{display:flex;align-items:center;gap:.3rem;font-size:.7rem;white-space:nowrap;}
+        .ore-pill .ol{color:var(--mu);}
+        .ore-pill .ov{font-weight:700;}
+        .ore-pill .ov.common{color:var(--tx);}
+        .ore-pill .ov.rare{color:var(--blue);}
+        .ore-pill .ov.epic{color:var(--purple);}
+        .sub-pill{margin-left:auto;display:flex;align-items:center;gap:.3rem;font-size:.7rem;background:rgba(34,204,102,.08);border:1px solid rgba(34,204,102,.2);padding:.2rem .6rem;border-radius:100px;white-space:nowrap;}
+        .sub-pill span{color:var(--green);font-weight:700;}
+
+        /* TABS */
+        .tabs{display:flex;border-bottom:1px solid var(--br);background:rgba(11,11,15,.7);position:sticky;top:58px;z-index:100;overflow-x:auto;}
+        .tab{padding:.8rem 1.4rem;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--mu);border-bottom:2px solid transparent;transition:color .18s,border-color .18s;white-space:nowrap;flex-shrink:0;}
+        .tab.active{color:var(--o);border-bottom-color:var(--o);}
+        .tab:hover:not(.active){color:var(--tx);}
+
+        /* PANELS */
+        .panel{display:none;padding:1.25rem;max-width:1200px;margin:0 auto;}
+        .panel.active{display:block;}
+
+        /* LAYOUT */
+        .two-col{display:grid;grid-template-columns:1fr 290px;gap:1.1rem;align-items:start;}
+        .sticky-sidebar{position:sticky;top:130px;}
+        .sec-label{font-size:.67rem;font-weight:700;color:var(--o);text-transform:uppercase;letter-spacing:.13em;margin-bottom:.6rem;}
+
+        /* CARD */
+        .card{background:var(--surf);border:1px solid var(--br);border-radius:8px;padding:1.2rem;transition:border-color .2s,box-shadow .2s;}
+        .card:hover{border-color:rgba(255,85,0,.38);box-shadow:0 0 18px rgba(255,85,0,.06);}
+
+        /* MINER GRID */
+        .miner-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:.7rem;align-content:start;margin-bottom:.75rem;}
+        .miner-card{background:var(--surf2);border:1px solid var(--br);border-radius:8px;padding:1rem;position:relative;transition:border-color .2s;}
+        .miner-card.dispatched{border-color:rgba(255,85,0,.38);}
+        .miner-card.dispatched::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--o),var(--gold));border-radius:8px 8px 0 0;}
+        .m-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;}
+        .m-name{font-size:.8rem;font-weight:700;}
+        .m-id{font-size:.65rem;color:var(--mu);}
+        .rarity-badge{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;padding:.12rem .45rem;border-radius:100px;font-weight:700;margin-bottom:.6rem;display:inline-block;}
+        .rarity-badge.common{background:rgba(138,128,112,.15);color:var(--mu);}
+        .rarity-badge.rare{background:rgba(85,153,255,.12);color:var(--blue);}
+        .rarity-badge.epic{background:rgba(170,68,255,.12);color:var(--purple);}
+        .rarity-badge.legendary{background:rgba(212,160,23,.12);color:var(--gold);}
+        .m-row{display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:.25rem;}
+        .m-row .ml{color:var(--mu);}
+        .m-row .mv{font-weight:600;}
+        .dur-track{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin:.4rem 0;}
+        .dur-fill{height:3px;border-radius:2px;transition:width .5s;}
+        .dur-fill.hi{background:linear-gradient(90deg,var(--green),#66EE99);}
+        .dur-fill.md{background:linear-gradient(90deg,#FFAA00,#FFD000);}
+        .dur-fill.lo{background:linear-gradient(90deg,#FF3300,#FF6600);}
+        .zone-badge{font-size:.62rem;padding:.13rem .5rem;border-radius:100px;font-weight:700;display:inline-block;margin:.35rem 0;}
+        .zone-badge.surface{background:rgba(34,204,102,.1);color:var(--green);border:1px solid rgba(34,204,102,.22);}
+        .zone-badge.mid{background:rgba(85,153,255,.1);color:var(--blue);border:1px solid rgba(85,153,255,.22);}
+        .zone-badge.deep{background:rgba(170,68,255,.1);color:var(--purple);border:1px solid rgba(170,68,255,.22);}
+        .zone-badge.idle{background:rgba(138,128,112,.1);color:var(--mu);border:1px solid rgba(138,128,112,.18);}
+        .m-actions{display:flex;gap:.35rem;margin-top:.6rem;flex-wrap:wrap;}
+        .m-btn{flex:1;min-width:0;padding:.32rem .4rem;border:1px solid var(--br);background:transparent;color:var(--mu);font-size:.67rem;font-weight:600;border-radius:4px;cursor:pointer;transition:all .16s;text-align:center;}
+        .m-btn:hover{border-color:var(--o);color:var(--o);}
+        .m-btn.go{background:var(--o);color:#fff;border-color:var(--o);}
+        .m-btn.go:hover{background:#CC4400;}
+        .m-btn.recall{border-color:rgba(255,85,0,.35);color:#FF7744;}
+        .m-btn.repair{border-color:rgba(212,160,23,.3);color:var(--gold);}
+        .mine-rate{font-size:.65rem;color:var(--o);margin-top:.3rem;}
+        .empty-guild{text-align:center;padding:3rem 1rem;color:var(--mu);font-size:.85rem;grid-column:1/-1;}
+
+        /* SHOP SIDEBAR */
+        .shop-item{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid rgba(255,85,0,.07);}
+        .shop-item:last-child{border-bottom:none;}
+        .si-name{font-size:.78rem;font-weight:700;margin-bottom:.12rem;}
+        .si-sub{font-size:.66rem;color:var(--mu);}
+        .si-btn{background:var(--surf);border:1px solid var(--br);color:var(--tx);padding:.28rem .65rem;border-radius:4px;font-size:.68rem;font-weight:700;cursor:pointer;transition:all .16s;white-space:nowrap;}
+        .si-btn:hover:not(:disabled){border-color:var(--o);color:var(--o);}
+        .si-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+        /* ORE INVENTORY */
+        .ore-inv{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-top:.5rem;}
+        .ore-slot{background:var(--surf2);border:1px solid rgba(255,85,0,.09);border-radius:6px;padding:.5rem;text-align:center;}
+        .os-qty{font-size:1rem;font-weight:900;display:block;}
+        .os-name{font-size:.6rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;}
+
+        /* INGOT INVENTORY */
+        .ingot-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem;}
+        .ingot-chip{font-size:.68rem;font-weight:700;padding:.2rem .55rem;border-radius:4px;background:var(--surf2);border:1px solid var(--br);}
+        .ingot-chip.bronze{color:#E8A050;}
+        .ingot-chip.iron{color:#AAAAAA;}
+        .ingot-chip.mithril{color:var(--blue);}
+        .ingot-chip.astral{color:var(--purple);}
+
+        /* SMELTERY */
+        .smelt-header{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;background:var(--surf);border:1px solid var(--br);border-radius:8px;margin-bottom:1.2rem;}
+        .emit-big{font-size:2.2rem;font-weight:900;color:var(--o);line-height:1;min-width:70px;}
+        .emit-meta{flex:1;}
+        .emit-meta h3{font-size:.82rem;font-weight:700;margin-bottom:.25rem;}
+        .emit-meta p{font-size:.7rem;color:var(--mu);}
+        .res-track{height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;margin-top:.5rem;}
+        .res-fill{height:100%;background:linear-gradient(90deg,var(--o),var(--gold));border-radius:4px;transition:width .8s;}
+        .smelt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem;}
+        .recipe-card{background:var(--surf);border:1px solid var(--br);border-radius:8px;padding:1.2rem;position:relative;overflow:hidden;}
+        .recipe-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+        .recipe-card.bronze::before{background:linear-gradient(90deg,#CD7F32,#E8A050);}
+        .recipe-card.iron::before{background:linear-gradient(90deg,#777,#BBBBBB);}
+        .recipe-card.mithril::before{background:linear-gradient(90deg,var(--blue),#88CCFF);}
+        .recipe-card.astral::before{background:linear-gradient(90deg,var(--purple),var(--gold));}
+        .r-tier{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.3rem;}
+        .r-tier.bronze{color:#E8A050;}
+        .r-tier.iron{color:#AAAAAA;}
+        .r-tier.mithril{color:var(--blue);}
+        .r-tier.astral{color:var(--purple);}
+        .r-name{font-size:1.05rem;font-weight:900;margin-bottom:.9rem;}
+        .r-row{display:flex;justify-content:space-between;font-size:.76rem;padding:.35rem 0;border-bottom:1px solid rgba(255,85,0,.06);}
+        .r-row:last-of-type{border-bottom:none;}
+        .r-lbl{color:var(--mu);}
+        .r-val{font-weight:700;}
+        .r-val.cost{color:#FF7744;}
+        .r-val.reward{color:var(--green);}
+        .sub-note{font-size:.62rem;background:rgba(34,204,102,.1);color:var(--green);border:1px solid rgba(34,204,102,.22);padding:.12rem .45rem;border-radius:100px;display:inline-block;margin-top:.45rem;font-weight:700;}
+        .forge-btn{width:100%;margin-top:.9rem;padding:.6rem;background:var(--o);color:#fff;border:none;border-radius:4px;font-weight:800;font-size:.79rem;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:all .18s;}
+        .forge-btn:hover:not(:disabled){background:#CC4400;box-shadow:0 0 18px rgba(255,85,0,.3);}
+        .forge-btn:disabled{background:rgba(255,85,0,.18);color:rgba(255,255,255,.35);cursor:not-allowed;box-shadow:none;}
+        .forge-btn.sub{background:linear-gradient(135deg,#1A8A44,var(--green));}
+        .forge-btn.sub:hover{background:linear-gradient(135deg,#0F5C2E,#1A8A44);}
+
+        /* MARKET / MP PLACEHOLDER */
+        .ph{text-align:center;padding:5rem 2rem;}
+        .ph-badge{display:inline-block;background:rgba(255,85,0,.07);border:1px solid rgba(255,85,0,.22);color:var(--o);font-size:.68rem;padding:.28rem .9rem;border-radius:100px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.25rem;}
+        .ph h2{font-size:1.5rem;font-weight:900;margin-bottom:.6rem;}
+        .ph p{color:var(--mu);font-size:.88rem;max-width:460px;margin:0 auto;}
+
+        /* TOAST */
+        #toast{position:fixed;bottom:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:.4rem;pointer-events:none;}
+        .ti{background:var(--surf);border:1px solid var(--br);border-radius:6px;padding:.6rem 1rem;font-size:.78rem;font-weight:600;max-width:290px;animation:tIn .18s ease;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+        .ti.success{border-color:rgba(34,204,102,.38);color:var(--green);}
+        .ti.error{border-color:rgba(255,85,0,.45);color:#FF7744;}
+        .ti.info{color:var(--tx);}
+        @keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+
+        /* TUTORIAL MODAL */
+        .overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);}
+        .overlay.hidden{display:none;}
+        .modal{background:var(--surf);border:1px solid rgba(255,85,0,.3);border-radius:10px;padding:2rem;max-width:480px;width:90%;}
+        .tut-step{font-size:.67rem;color:var(--mu);text-transform:uppercase;letter-spacing:.14em;margin-bottom:.9rem;}
+        .tut-dots{display:flex;gap:.4rem;margin-bottom:1rem;}
+        .tut-dot{width:20px;height:3px;border-radius:2px;background:rgba(255,85,0,.18);transition:background .2s;}
+        .tut-dot.done{background:var(--o);}
+        .modal h2{font-size:1.35rem;font-weight:900;margin-bottom:.9rem;}
+        .modal-body{font-size:.86rem;color:var(--mu);line-height:1.72;margin-bottom:1.5rem;}
+        .modal-body strong{color:var(--tx);}
+        .modal-foot{display:flex;gap:.65rem;justify-content:flex-end;}
+        .m-skip{background:transparent;color:var(--mu);border:1px solid rgba(138,128,112,.28);padding:.48rem 1.1rem;border-radius:4px;font-size:.78rem;font-weight:700;cursor:pointer;transition:color .18s;}
+        .m-skip:hover{color:var(--tx);}
+        .m-next{background:var(--o);color:#fff;border:none;padding:.48rem 1.4rem;border-radius:4px;font-size:.78rem;font-weight:800;letter-spacing:.07em;cursor:pointer;transition:background .18s;}
+        .m-next:hover{background:#CC4400;}
+
+        @media(max-width:750px){.two-col{grid-template-columns:1fr;}.sticky-sidebar{position:static;}.smelt-grid{grid-template-columns:1fr 1fr;}}
+        @media(max-width:480px){.smelt-grid{grid-template-columns:1fr;}.tab{padding:.7rem .85rem;font-size:.7rem;}.hbal .lbl{display:none;}}
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="back-link">← Home</a>
+    <div class="logo">Terra-Forge</div>
+    <div class="spacer"></div>
+    <div class="hbal gold"><span class="lbl">Gold&nbsp;</span><span class="val" id="hGold">500</span></div>
+    <div class="hbal nmg"><span class="lbl">NMG&nbsp;</span><span class="val" id="hNmg">0.000</span></div>
+    <div class="emit-pill"><span class="dot"></span><span id="hEmit">1.00×</span>&nbsp;Emission</div>
+    <button class="btn-wallet" onclick="connectWallet()">Connect Wallet</button>
+</header>
+
+<div class="ore-bar" id="oreBar">
+    <div class="ore-pill"><span class="ol">Copper</span><span class="ov common" id="oc">0</span></div>
+    <div class="ore-pill"><span class="ol">Iron Ore</span><span class="ov common" id="oi">0</span></div>
+    <div class="ore-pill"><span class="ol">Coal</span><span class="ov common" id="oo">0</span></div>
+    <div class="ore-pill"><span class="ol">Mithril</span><span class="ov rare" id="om">0</span></div>
+    <div class="ore-pill"><span class="ol">Star Element</span><span class="ov epic" id="os">0</span></div>
+    <div class="sub-pill">⚡ Subsidies: <span id="subCount">3</span></div>
+</div>
+
+<div class="tabs">
+    <div class="tab active" onclick="goTab('miners')">⛏ Miners</div>
+    <div class="tab" onclick="goTab('smeltery')">🔥 Smeltery</div>
+    <div class="tab" onclick="goTab('market')">💱 Market</div>
+    <div class="tab" onclick="goTab('mp')">🏪 Marketplace</div>
+</div>
+
+<!-- MINERS -->
+<div id="panel-miners" class="panel active">
+    <div class="two-col">
+        <div>
+            <div class="sec-label">Your Guild — <span id="activeCount">0</span> Mining Now</div>
+            <div class="miner-grid" id="minerGrid">
+                <div class="empty-guild">No miners yet — hire from the shop →</div>
+            </div>
+        </div>
+        <div class="sticky-sidebar">
+            <div class="card">
+                <div class="sec-label">Guild Recruitment</div>
+                <div id="shopList"></div>
+                <div style="margin-top:1.1rem;">
+                    <div class="sec-label">Ore Inventory</div>
+                    <div class="ore-inv" id="oreInv"></div>
+                </div>
+                <div style="margin-top:1rem;">
+                    <div class="sec-label">Ingot Vault</div>
+                    <div class="ingot-row" id="ingotRow"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SMELTERY -->
+<div id="panel-smeltery" class="panel">
+    <div class="smelt-header">
+        <div class="emit-big" id="emitBig">1.00×</div>
+        <div class="emit-meta">
+            <h3>Smelting Reserve</h3>
+            <p id="reserveLabel">100% — Full output</p>
+            <div class="res-track"><div class="res-fill" id="resFill" style="width:100%"></div></div>
+        </div>
+    </div>
+    <div class="smelt-grid" id="smeltGrid"></div>
+</div>
+
+<!-- MARKET -->
+<div id="panel-market" class="panel">
+    <div class="ph">
+        <div class="ph-badge">Phase 2 — Coming Soon</div>
+        <h2>NMG/NEOX Market Exchange</h2>
+        <p>Live price feed from neoxa.exchange, swap widget, 1.5% DEX fee display, and slippage controls. Launches with Phase 2 of the Terra-Forge protocol.</p>
+    </div>
+</div>
+
+<!-- MARKETPLACE -->
+<div id="panel-mp" class="panel">
+    <div class="ph">
+        <div class="ph-badge">Phase 2 — Coming Soon</div>
+        <h2>P2P Guild Marketplace</h2>
+        <p>Post ore listings, accept bids, rent out miners for passive income. Server-enforced escrow. 2% transaction fee routed to Treasury. No speculation — just industrial trade.</p>
+    </div>
+</div>
+
+<!-- TUTORIAL OVERLAY -->
+<div class="overlay" id="tutOverlay">
+    <div class="modal">
+        <div class="tut-dots" id="tutDots"></div>
+        <div class="tut-step" id="tutStepLbl">Step 1 of 6</div>
+        <h2 id="tutTitle"></h2>
+        <div class="modal-body" id="tutBody"></div>
+        <div class="modal-foot">
+            <button class="m-skip" onclick="skipTut()">Skip Tutorial</button>
+            <button class="m-next" id="tutNextBtn" onclick="nextTutStep()">Next</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────
+const MINER_DEFS=[
+    {id:'cb',name:'Common Biotech',rarity:'common',cost:200,currency:'gold',rate:0.5,mult:1.0,zones:['surface','mid'],desc:'200 Gold — 0.5 ore/sec'},
+    {id:'rb',name:'Rare Biotech',rarity:'rare',cost:800,currency:'gold',rate:0.75,mult:1.3,zones:['surface','mid'],desc:'800 Gold — 0.75 ore/sec'},
+    {id:'ec',name:'Epic Cyborg',rarity:'epic',cost:50,currency:'nmg',rate:1.5,mult:1.8,zones:['mid','deep'],desc:'50 NMG — 1.5 ore/sec'},
+    {id:'lc',name:'Legendary Cyborg',rarity:'legendary',cost:200,currency:'nmg',rate:2.5,mult:2.5,zones:['mid','deep'],desc:'200 NMG — 2.5 ore/sec'},
+];
+const ZONES=[
+    {id:'surface',label:'Surface',ores:{copper:.60,iron:.30,coal:.10},mult:1.0},
+    {id:'mid',label:'Mid-Fracture',ores:{copper:.35,iron:.25,coal:.15,mithril:.25},mult:1.5},
+    {id:'deep',label:'Deep Core',ores:{iron:.20,coal:.20,mithril:.40,star:.20},mult:2.5},
+];
+const RECIPES=[
+    {id:'bronze',tier:'bronze',label:'Common',name:'Bronze Ingot',inputs:{copper:5,coal:2},cat:0.10,base:1.20,ingot:'bronze'},
+    {id:'iron',tier:'iron',label:'Uncommon',name:'Iron Ingot',inputs:{iron:5,coal:3},cat:0.50,base:3.50,ingot:'iron'},
+    {id:'mithril',tier:'mithril',label:'Rare',name:'Mithril Ingot',inputs:{mithril:10,coal:5},cat:2.00,base:15.00,ingot:'mithril'},
+    {id:'astral',tier:'astral',label:'Legendary',name:'Astral Ingot',inputs:{star:20,mithril:10},cat:10.00,base:85.00,ingot:'astral'},
+];
+const TUT_STEPS=[
+    {title:'Welcome to Terra-Forge',body:'You\'ve reached <strong>Planetary Core 9-C</strong>, Year 2382. The Obsidian Crust holds <strong>NMG crystals</strong> — the galaxy\'s most coveted sub-space catalyst.<br><br>You start with <strong>500 Gold</strong>. No wallet required.'},
+    {title:'Hire Your First Miner',body:'In the <strong>Miners</strong> tab, hire a <strong>Common Biotech</strong> for 200 Gold — you can afford two right now.<br><br>Higher-rarity miners extract faster and reach richer zones.'},
+    {title:'Dispatch to a Zone',body:'Assign miners to a <strong>zone</strong>. Surface yields steady Copper and Iron. <strong>Mid-Fracture</strong> unlocks Mithril. <strong>Deep Core</strong> drops Star Element — rare, high-value.<br><br>Monitor durability. Repair below 30%.'},
+    {title:'Forge in the Smeltery',body:'In the <strong>Smeltery</strong> tab, convert raw ores into <strong>NMG Ingots</strong>. Your first <strong>3 Bronze smelts are free</strong> — the Tutorial Subsidy covers the catalyst cost.<br><br>95% of every catalyst is burned permanently.'},
+    {title:'Connect a Wallet (Optional)',body:'The entire gameplay loop works with <strong>Gold only</strong>. Connect a Neoxa wallet only when you want to withdraw NMG to <strong>neoxa.exchange</strong>.<br><br>Daily cap: <strong>100 NMG per account</strong>. Never forced. Always optional.'},
+    {title:'Five Ways to Win',body:'Mine ores and sell P2P. Rent out miners for passive income. Stake NMG/NEOX pairs for 1.5% DEX fees. Operate a Smartnode for 45% block rewards.<br><br>Pick your lane. The protocol doesn\'t force one.'},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────
+const SK='tf_v1';
+let S;
+function load(){
+    try{const d=localStorage.getItem(SK);if(d){S=JSON.parse(d);return;}}catch(e){}
+    S={gold:500,nmg:0,sub:3,tutDone:false,miners:[],ores:{copper:0,iron:0,coal:0,mithril:0,star:0},ingots:{bronze:0,iron:0,mithril:0,astral:0},nid:1,res:100,ts:Date.now()};
+}
+function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function emMult(){const r=S.res;return r>50?1.0:r>20?0.75:r>5?0.50:0;}
+function floor(n){return Math.floor(n);}
+function fmt3(n){return Number(n).toFixed(3);}
+
+// ── TICK ──────────────────────────────────────────────────────────────
+function tick(){
+    const now=Date.now(),dt=Math.min((now-S.ts)/1000,30);
+    S.ts=now;
+    S.miners.filter(m=>m.zone&&m.dur>0).forEach(m=>{
+        const def=MINER_DEFS.find(d=>d.id===m.did);
+        const zone=ZONES.find(z=>z.id===m.zone);
+        if(!def||!zone)return;
+        m.dur=Math.max(0,m.dur-0.00139*dt);
+        const eff=def.rate*zone.mult*(0.2+0.8*(m.dur/100))*dt;
+        Object.entries(zone.ores).forEach(([ore,frac])=>{S.ores[ore]=(S.ores[ore]||0)+eff*frac;});
+    });
+    save();
+    render();
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────
+function render(){
+    const m=emMult();
+    document.getElementById('hGold').textContent=floor(S.gold);
+    document.getElementById('hNmg').textContent=fmt3(S.nmg);
+    document.getElementById('hEmit').textContent=m.toFixed(2)+'×';
+    document.getElementById('emitBig').textContent=m.toFixed(2)+'×';
+    document.getElementById('subCount').textContent=S.sub;
+    document.getElementById('resFill').style.width=S.res+'%';
+    const rl=S.res>50?'Full output':S.res>20?'Reduced (0.75×)':S.res>5?'Low output (0.50×)':'PAUSED — Reserve depleted';
+    document.getElementById('reserveLabel').textContent=S.res.toFixed(1)+'% — '+rl;
+    // ore bar
+    const od={copper:'oc',iron:'oi',coal:'oo',mithril:'om',star:'os'};
+    Object.entries(od).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=floor(S.ores[k]||0);});
+    renderMiners();
+    renderShop();
+    renderOreInv();
+    renderIngots();
+    renderSmelt();
+}
+
+function renderMiners(){
+    const grid=document.getElementById('minerGrid');
+    const active=S.miners.filter(m=>m.zone&&m.dur>0).length;
+    document.getElementById('activeCount').textContent=active;
+    if(!S.miners.length){grid.innerHTML='<div class="empty-guild">No miners yet — hire from the shop →</div>';return;}
+    grid.innerHTML=S.miners.map(m=>{
+        const def=MINER_DEFS.find(d=>d.id===m.did);
+        const disp=m.zone&&m.dur>0;
+        const dur=Math.round(m.dur);
+        const dc=dur>60?'hi':dur>30?'md':'lo';
+        const zone=ZONES.find(z=>z.id===m.zone);
+        const zl=zone?zone.label:'Idle';
+        const zc=m.zone||'idle';
+        const eff=(def.rate*(zone?zone.mult:1)*(0.2+0.8*(m.dur/100))).toFixed(2);
+        let actions='';
+        if(m.zone){
+            actions=`<button class="m-btn recall" onclick="recall(${m.id})">Recall</button>`;
+        } else {
+            actions=ZONES.map(z=>`<button class="m-btn go" onclick="dispatch(${m.id},'${z.id}')" style="font-size:.6rem">${z.label}</button>`).join('');
+            if(dur<80)actions+=`<button class="m-btn repair" onclick="repair(${m.id})">Repair 10G</button>`;
+        }
+        return `<div class="miner-card ${disp?'dispatched':''}">
+            <div class="m-head"><div class="m-name">${def.name}</div><div class="m-id">#${m.id}</div></div>
+            <div class="rarity-badge ${def.rarity}">${def.rarity}</div>
+            <div class="m-row"><span class="ml">Durability</span><span class="mv">${dur}/100</span></div>
+            <div class="dur-track"><div class="dur-fill ${dc}" style="width:${dur}%"></div></div>
+            <div class="m-row"><span class="ml">Zone</span><span class="mv"><span class="zone-badge ${zc}">${zl}</span></span></div>
+            ${disp?`<div class="mine-rate">~${eff} ore/sec</div>`:''}
+            <div class="m-actions">${actions}</div>
+        </div>`;
+    }).join('');
+}
+
+function renderShop(){
+    document.getElementById('shopList').innerHTML=MINER_DEFS.map(d=>{
+        const ok=d.currency==='gold'?S.gold>=d.cost:S.nmg>=d.cost;
+        const rc={common:'#88AA88',rare:'var(--blue)',epic:'var(--purple)',legendary:'var(--gold)'}[d.rarity];
+        return `<div class="shop-item">
+            <div><div class="si-name" style="color:${rc}">${d.name}</div><div class="si-sub">${d.desc}</div></div>
+            <button class="si-btn" onclick="hire('${d.id}')" ${ok?'':'disabled'}>Hire</button>
+        </div>`;
+    }).join('');
+}
+
+function renderOreInv(){
+    const names={copper:'Copper',iron:'Iron',coal:'Coal',mithril:'Mithril',star:'Star'};
+    document.getElementById('oreInv').innerHTML=Object.entries(names).map(([k,n])=>
+        `<div class="ore-slot"><span class="os-qty">${floor(S.ores[k]||0)}</span><span class="os-name">${n}</span></div>`
+    ).join('');
+}
+
+function renderIngots(){
+    const names={bronze:'Bronze',iron:'Iron',mithril:'Mithril',astral:'Astral'};
+    document.getElementById('ingotRow').innerHTML=Object.entries(names).map(([k,n])=>
+        `<div class="ingot-chip ${k}">${n}: ${S.ingots[k]||0}</div>`
+    ).join('');
+}
+
+function renderSmelt(){
+    const m=emMult();
+    document.getElementById('smeltGrid').innerHTML=RECIPES.map(r=>{
+        const hasOres=Object.entries(r.inputs).every(([o,q])=>floor(S.ores[o]||0)>=q);
+        const freeBronze=r.id==='bronze'&&S.sub>0;
+        const hasCat=freeBronze||(S.nmg>=r.cat);
+        const can=hasOres&&hasCat&&m>0;
+        const reward=(r.base*m).toFixed(3);
+        const iStr=Object.entries(r.inputs).map(([o,q])=>`${q} ${o.charAt(0).toUpperCase()+o.slice(1)}`).join(' + ');
+        return `<div class="recipe-card ${r.tier}">
+            <div class="r-tier ${r.tier}">${r.label} Tier</div>
+            <div class="r-name">${r.name}</div>
+            <div class="r-row"><span class="r-lbl">Inputs</span><span class="r-val">${iStr}</span></div>
+            <div class="r-row"><span class="r-lbl">Catalyst</span><span class="r-val cost">${freeBronze?'<span style="color:var(--green)">FREE (subsidy)</span>':r.cat+' NMG'}</span></div>
+            <div class="r-row"><span class="r-lbl">NMG Reward</span><span class="r-val reward">+${reward} NMG</span></div>
+            <div class="r-row"><span class="r-lbl">Burn</span><span class="r-val">95% catalyst destroyed</span></div>
+            ${freeBronze?`<div class="sub-note">⚡ ${S.sub} free smelt${S.sub!==1?'s':''} remaining</div>`:''}
+            <button class="forge-btn ${freeBronze?'sub':''}" onclick="smelt('${r.id}')" ${can?'':'disabled'}>
+                ${m===0?'Reserve Paused':freeBronze?'⚡ Forge Free':'Forge Ingot'}
+            </button>
+        </div>`;
+    }).join('');
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────
+function hire(did){
+    const d=MINER_DEFS.find(x=>x.id===did);
+    if(!d)return;
+    if(d.currency==='gold'){if(S.gold<d.cost){toast('Not enough Gold','error');return;}S.gold-=d.cost;}
+    else{if(S.nmg<d.cost){toast('Not enough NMG','error');return;}S.nmg-=d.cost;}
+    S.miners.push({id:S.nid++,did,dur:100,zone:null});
+    toast(d.name+' hired!','success');save();render();
+}
+
+function dispatch(id,zone){
+    const m=S.miners.find(x=>x.id===id);if(!m)return;
+    m.zone=zone;
+    const z=ZONES.find(x=>x.id===zone);
+    toast('Miner #'+id+' dispatched to '+z.label,'info');save();render();
+}
+
+function recall(id){
+    const m=S.miners.find(x=>x.id===id);if(!m)return;
+    m.zone=null;
+    toast('Miner #'+id+' recalled','info');save();render();
+}
+
+function repair(id){
+    if(S.gold<10){toast('Need 10 Gold','error');return;}
+    const m=S.miners.find(x=>x.id===id);if(!m)return;
+    const gain=Math.min(20,100-m.dur);
+    m.dur=Math.min(100,m.dur+gain);
+    S.gold-=10;
+    toast('Miner #'+id+' repaired +'+Math.round(gain)+' durability','success');save();render();
+}
+
+function smelt(rid){
+    const r=RECIPES.find(x=>x.id===rid);if(!r)return;
+    const m=emMult();
+    if(m===0){toast('Reserve depleted — smelting paused','error');return;}
+    for(const [o,q] of Object.entries(r.inputs)){
+        if((S.ores[o]||0)<q){toast('Need '+q+' '+o.charAt(0).toUpperCase()+o.slice(1),'error');return;}
+    }
+    const free=rid==='bronze'&&S.sub>0;
+    if(!free&&S.nmg<r.cat){toast('Need '+r.cat+' NMG for catalyst','error');return;}
+    for(const [o,q] of Object.entries(r.inputs))S.ores[o]-=q;
+    if(free)S.sub--;else S.nmg-=r.cat;
+    const reward=parseFloat((r.base*m).toFixed(3));
+    S.nmg+=reward;
+    S.ingots[r.ingot]=(S.ingots[r.ingot]||0)+1;
+    toast(r.name+' forged! +'+reward+' NMG','success');save();render();
+}
+
+function connectWallet(){toast('Wallet integration coming in Phase 2 — withdrawals to neoxa.exchange','info');}
+
+// ── TABS ──────────────────────────────────────────────────────────────
+function goTab(id){
+    const ids=['miners','smeltery','market','mp'];
+    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',ids[i]===id));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+id));
+}
+
+// ── TUTORIAL ──────────────────────────────────────────────────────────
+let tutIdx=0;
+function showTut(){
+    document.getElementById('tutOverlay').classList.remove('hidden');
+    renderTut();
+}
+function renderTut(){
+    const s=TUT_STEPS[tutIdx];
+    const dots=TUT_STEPS.map((_,i)=>`<div class="tut-dot ${i<=tutIdx?'done':''}"></div>`).join('');
+    document.getElementById('tutDots').innerHTML=dots;
+    document.getElementById('tutStepLbl').textContent='Step '+(tutIdx+1)+' of '+TUT_STEPS.length;
+    document.getElementById('tutTitle').textContent=s.title;
+    document.getElementById('tutBody').innerHTML=s.body;
+    document.getElementById('tutNextBtn').textContent=tutIdx<TUT_STEPS.length-1?'Next →':'Begin Mining';
+}
+function nextTutStep(){
+    tutIdx++;
+    if(tutIdx>=TUT_STEPS.length){closeTut();}else{renderTut();}
+}
+function skipTut(){closeTut();}
+function closeTut(){
+    document.getElementById('tutOverlay').classList.add('hidden');
+    S.tutDone=true;save();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+function toast(msg,type='info'){
+    const box=document.getElementById('toast');
+    const d=document.createElement('div');
+    d.className='ti '+type;d.textContent=msg;
+    box.appendChild(d);setTimeout(()=>d.remove(),3200);
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────
+load();
+render();
+if(!S.tutDone)showTut();
+setInterval(tick,1000);
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"e760ddd37cd24f59996a43a02176c933","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

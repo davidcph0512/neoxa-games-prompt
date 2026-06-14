@@ -31,6 +31,8 @@ English prompts for Terra-Forge v**2.2.0**. Canonical source: **`.whitepaper`**
 | [15-whitepaper-web-page.md](./15-whitepaper-web-page.md) | Full doc | Online whitepaper page v2.2.0 |
 | [16-economy-numbers-bible.md](./16-economy-numbers-bible.md) | **Canonical** | All numeric values |
 | **[17-sustainability-everyone-wins.md](./17-sustainability-everyone-wins.md)** | **§4.7 + §5.5–5.6** | **Sustainability & win matrix docs** |
+| **[18-game-prototype-economy-calibration.md](./18-game-prototype-economy-calibration.md)** | **§6.1** | **Fix prototype NMG inflation (mining + recipe audit)** |
+| **[19-market-external-marketplace-deferred.md](./19-market-external-marketplace-deferred.md)** | **§6 MVP** | **Market = neoxa.exchange link; Marketplace deferred** |
 
 ## Recommended Generation Order
 
@@ -42,6 +44,13 @@ English prompts for Terra-Forge v**2.2.0**. Canonical source: **`.whitepaper`**
 5. 14                           (landing page)
 6. 13                           (game UI)
 ```
+
+## v2.2.1 Changelog (from v2.2.0)
+
+- **Market MVP scope:** External CTA to neoxa.exchange only — no in-game swap widget
+- **Marketplace deferred:** P2P ore/miner rental not in MVP; §4.6 design retained for future
+- **Prototype calibration:** New prompt `18` — fix mining rate (ores/hr) and recipe inputs
+- **§6.1 Implementation notes:** Document common prototype errors that inflate NMG
 
 ## v2.2.0 Changelog (from v2.1.0)
 

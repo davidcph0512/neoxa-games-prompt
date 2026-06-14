@@ -59,9 +59,12 @@ Write a complete wallet and exchange interoperability specification covering eve
 - Player wallet signs burn transaction to on-chain burn address
 - In-game state updates only after burn confirmation
 
-### Exchange Integration
-- Link or embed neoxa.exchange for NMG/NEOX swaps
-- Display spot price, charts, slippage, and the 1.5% DEX fee
+### Exchange Integration (MVP — External Only)
+- **Do NOT embed** a swap widget or iframe in the game portal for MVP.
+- Market tab provides outbound CTAs: "Trade on neoxa.exchange" and "Register / Log In"
+- Optional read-only spot price display (no swap execution in-game)
+- All NMG ↔ NEOX swaps happen on neoxa.exchange with 1.5% DEX fee to LPs
+- See `19-market-external-marketplace-deferred.md` for MVP scope
 
 ## Error Scenarios to Address
 
