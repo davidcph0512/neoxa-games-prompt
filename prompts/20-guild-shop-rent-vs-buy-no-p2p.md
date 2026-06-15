@@ -85,20 +85,30 @@ Every miner tier offers two options from the **same Guild Hall shop**:
 
 ---
 
-## Guild Shop UI
+## Guild Shop UI — Dedicated Guild Hall Page (`/guild-hall`)
 
-Each miner card shows two buttons side by side:
+**Do NOT place recruitment on the Command Center page.** Guild Shop lives on its own route with hero art, lore, and large miner portraits. See `13-website-game-interface.md`.
+
+Each miner **showcase card** (one tier per section, spaced vertically):
 
 ```
+[ biotech-common.png — large portrait ]
+
 Common Biotech
+  Class: Biotech | Rarity: Common
+  Ideal zones: Surface, Mid-Fracture
+  "Rent 50 Gold for 7 days to trial. Buy 200 Gold for permanent roster."
+
   [ Rent — 50 Gold / 7 days ]   [ Buy — 200 Gold forever ]
 ```
 
-Rented miners show badge: **"LEASED — 5d 12h remaining"**
+Rented miners show badge on **Command Center** only: **"LEASED — 5d 12h remaining"**
 Owned miners show badge: **"OWNED"**
 
-**Tutorial integration:** On onboarding Step 2, the spotlight system MUST highlight
-the **Rent** button (not Buy) as the primary F2P path. See `13-website-game-interface.md`.
+**Required images per tier:** miner portrait PNG (512×512), wing banner, Guild Hall hero.
+
+**Tutorial integration:** Steps 1–3 happen on `/guild-hall`. Step 2 spotlight = **Rent** button on Common Biotech. See `13-website-game-interface.md`.
+
 
 ---
 

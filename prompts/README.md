@@ -45,6 +45,22 @@ English prompts for Terra-Forge v**2.2.0**. Canonical source: **`.whitepaper`**
 6. 13                           (game UI)
 ```
 
+## v2.3.3 Changelog (layout density)
+
+- **Anti-crowding rules:** max 4 UI groups above fold, 960px content width, 64px section gaps
+- **Thin header:** balances in Wallet dropdown, not inline chips
+- **Command Center:** one miner card per row; no Zone Intel sidebar → link to /zones
+- **Guild Hall:** one tier per scroll chapter, centered portrait
+- **Forge:** tabbed single-recipe view instead of 2×2 grid
+- **Progressive disclosure:** secondary stats/actions in "More" menu or modals
+
+## v2.3.2 Changelog (multi-page UI + mandatory images)
+
+- **Mandatory image assets:** hero banners, miner portraits, zone panoramas, ore/ingot icons on every page
+- **Multi-page portal:** separate routes for Command Center, Guild Hall, Forge, Market, Zone Atlas
+- **Guild Hall is its own page:** recruitment with lore, portraits, rent/buy — NOT on miner roster page
+- **Spacing rules:** one primary function per page; cross-page tutorial navigation
+
 ## v2.3.1 Changelog (UI & wallet gate)
 
 - **Web3 game aesthetic:** hex grids, chain badges, rarity borders, loot-pop animations

@@ -1,6 +1,6 @@
 Terra-Forge: The Deep Core
 GameFi 2.0 Technical Whitepaper & Game Design Document
-Document Version: 2.3.1
+Document Version: 2.3.3
 Ledger Architecture: L1 Native Asset Protocol
 Language: English only
 Author: Lead Game Economist & Systems Architect
@@ -386,46 +386,47 @@ governance replenishment keep pace with player growth.
 6. WEBSITE & GAME INTERFACE
 ================================================================================
 
-Visual: Web3 game command deck — dark-mode sci-fi with industrial steampunk lore.
+Visual: Web3 game portal — dark-mode sci-fi with industrial steampunk lore.
 Base colors: #1A1A24, #FF5500, #0B0B0F. Web3 accents: #00E5FF, #8B5CF6, #FFD700.
-Patterns: hex grids, glassmorphism cards, rarity-colored borders, chain badges,
-loot-pop animations, pulsing glow on on-chain actions. Language: English only.
+Every page MUST include hero banners and character/zone art — text-only UI is NOT
+acceptable. See prompts/13-website-game-interface.md § Image Assets.
+Language: English only.
 
-Wallet gate (MVP): Portal blocked until Neoxa sign-in. No browser extension yet —
-players enter address + paste signmessage signature per https://dev.neoxa.net/
-(POST /agents/verify-message). Disabled "Extension — Coming Soon" slot reserved.
-NMG deposit optional after sign-in; starter Gold still granted on first auth.
+Wallet gate (MVP): Portal blocked until Neoxa sign-in (manual address + signmessage
+per https://dev.neoxa.net/). Connect modal includes wallet-gate hero image.
 
-Portal sections (MVP):
-  A) Miner Command Center — roster, zone dispatch, fatigue/durability
-  B) Smeltery Forge — 4 ingot recipes, catalyst fees, emission multiplier
-  C) Market — External CTA to neoxa.exchange (login/register + trade NMG/NEOX)
-  D) Guild Hall Shop — Rent vs Buy miners (no P2P)
+Multi-page architecture (NOT one cramped dashboard):
+  /command       — Command Center: one miner card per row; no sidebar
+  /guild-hall    — Guild Hall: one tier per scroll chapter; centered portrait
+  /forge         — Smeltery Forge: tabbed single-recipe view (not 2×2 grid)
+  /market        — Market: hero + one CTA card + flow diagram
+  /zones         — Zone Atlas: one zone panorama per section
 
-Mining zones (Section A UI — "Zone Intel" panel):
+Layout density (mandatory):
+  - Max 4 UI groups above the fold per page
+  - Content max-width 960px; section gaps ≥ 64px; card padding ≥ 24px
+  - Header: one thin row — balances inside Wallet chip dropdown, not inline chips
+  - Max 2 visible buttons per card; secondary actions in "More" menu
+  - No data tables on main views; progressive disclosure via modals/expand
+  - Zone Intel on /zones only — Command Center links out, no sidebar table
+
+Image requirements: hero + portraits/icons on every page (see prompt 13).
+
+Mining zones (Command Center sidebar + Zone Atlas page):
   Surface       | γ 1.0× | 45% Cu, 30% Fe, 25% Coal, 0% Mithril, 0% Star-Element
-                | Default zone; all miners; Bronze loop
-  Mid-Fracture  | γ 1.3× | 30% Cu, 25% Fe, 25% Coal, 15% Mithril, 5% Star-Element
-                | Unlocks after first Bronze Ingot forged
-  Deep Core     | γ 1.6× | 15% Cu, 20% Fe, 25% Coal, 30% Mithril, 10% Star-Element
-                | Unlocks with Epic or Legendary Cyborg on roster; Mithril/Astral path
+  Mid-Fracture  | γ 1.3× | unlock: first Bronze forged
+  Deep Core     | γ 1.6× | unlock: Epic or Legendary Cyborg on roster
 
-Zone selector on each miner card; locked zones show padlock + requirement tooltip.
-Dispatch button label adapts per zone ("Send to Surface", etc.).
-
-Tutorial spotlight system: After sign-in, guided tour dims UI (80% overlay) and
-pulses a ring on ONE target per step. Step 2 MUST spotlight the Rent button on
-Common Biotech (50 Gold / 7 days). "Next" disabled until player clicks spotlight.
-Steps: Guild Hall → Rent → Confirm → Surface zone → Dispatch → Forge Bronze →
-optional NMG deposit. Skip persists tutorial_completed flag.
+Tutorial spotlight (cross-page): Guild Hall nav → /guild-hall Rent button →
+Confirm → /command dispatch → /forge Bronze → optional NMG deposit.
 
 NOT in portal:
-  - P2P systems (removed v2.3.0 — no ore marketplace, no player rental)
-  - In-game NMG/NEOX swap widget or embedded DEX iframe
-  - Browser wallet extension (manual sign-in only at MVP)
+  - Single-page layout stacking Command + Guild + Forge + Market
+  - P2P systems (removed v2.3.0)
+  - In-game swap widget or browser wallet extension (MVP)
 
-Guild Shop UI: each miner card shows [ Rent — X / 7 days ] and [ Buy — Y forever ].
-Rented miners display lease timer badge.
+Guild Hall UI: spaced showcase cards with large portraits; [ Rent — X / 7 days ]
+and [ Buy — Y forever ] per tier. Roster badges on Command Center only.
 
 6.1 Prototype Implementation Notes
 ----------------------------------
@@ -444,5 +445,5 @@ See prompts/19-market-external-marketplace-deferred.md for MVP market scope.
 See prompts/20-guild-shop-rent-vs-buy-no-p2p.md for rent vs buy spec (no P2P).
 
 ================================================================================
-END OF DOCUMENT v2.3.1
+END OF DOCUMENT v2.3.3
 ================================================================================
